@@ -61,7 +61,6 @@ async function fetchWeather() {
 
         // Extraer latitud, longitud y nombre formateado
         const latitude = geoData[0].lat;
-        const latitude = geoData[0].lat;
         const longitude = geoData[0].lon;  // Toma solo el nombre de la ciudad
         const countryName = geoData[0].display_name.split(',').pop().trim(); // Toma el nombre del país
 
