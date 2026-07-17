@@ -26,14 +26,13 @@ const weatherCodes = {
 function showMessage(text) {
     messageBox.textContent = text;
     messageBox.classList.remove('hidden');
-    weatherCard.classList.add('hidden'); // Oculta la tarjeta si hay error
+    weatherCard.classList.add('hidden'); 
 }
 
 // --- FUNCIÓN PRINCIPAL PARA CONSULTAR LAS APIS ---
 async function fetchWeather() {
     const city = cityInput.value.trim();
 
-    // Validación: Input vacío
     if (!city) {
         showMessage("Por favor, ingresa el nombre de una ciudad.");
         return;
@@ -42,23 +41,27 @@ async function fetchWeather() {
     try {
         showMessage("Buscando ciudad...");
 
-        // 1. Obtener coordenadas (Latitud y Longitud) mediante la API de Geocodificación de Open-Meteo
+        // 1. Obtener coordenadas mediante la API de Geocodificación (con modo cors explícito)
         const geoUrl = `https://open-meteo.com{encodeURIComponent(city)}&count=1&language=es&format=json`;
-        const geoResponse = await fetch(geoUrl);
+        const geoResponse = await fetch(geoUrl, { mode: 'cors' });
+        
+        if (!geoResponse.ok) throw new Error(`Error en geocodificación: ${geoResponse.status}`);
+        
         const geoData = await geoResponse.json();
 
-        // Validación: No se encontró la ciudad
         if (!geoData.results || geoData.results.length === 0) {
             showMessage("No se encontró la ciudad. Intenta con otra.");
             return;
         }
 
-        // Extraer datos de la ciudad encontrada
         const { latitude, longitude, name, country } = geoData.results[0];
 
         // 2. Obtener datos del clima usando las coordenadas obtenidas
         const weatherUrl = `https://open-meteo.com{latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m`;
-        const weatherResponse = await fetch(weatherUrl);
+        const weatherResponse = await fetch(weatherUrl, { mode: 'cors' });
+        
+        if (!weatherResponse.ok) throw new Error(`Error en clima: ${weatherResponse.status}`);
+        
         const weatherData = await weatherResponse.json();
 
         // 3. Renderizar los datos en el DOM
@@ -68,24 +71,21 @@ async function fetchWeather() {
         windspeed.textContent = current.wind_speed_10m;
         humidity.textContent = current.relative_humidity_2m;
         
-        // Traducir el código de clima usando nuestro diccionario
         weatherDesc.textContent = weatherCodes[current.weather_code] || "Condiciones desconocidas";
 
-        // Mostrar tarjeta de resultados y ocultar mensajes de carga
         messageBox.classList.add('hidden');
         weatherCard.classList.remove('hidden');
 
     } catch (error) {
-        // Manejo de fallos en la conexión o en las peticiones HTTP
-        console.error("Error en la aplicación:", error);
+        // Esto imprimirá el error real en tu consola (F12) para diagnosticarlo mejor
+        console.error("Detalle del error:", error);
         showMessage("Ocurrió un error al conectar con el servidor. Inténtalo de nuevo.");
     }
 }
 
-// --- ASIGNACIÓN DE EVENTOS (LISTENERS) ---
+// --- ASIGNACIÓN DE EVENTOS ---
 searchBtn.addEventListener('click', fetchWeather);
 
-// Permitir la búsqueda al presionar la tecla "Enter" en el input
 cityInput.addEventListener('keypress', (event) => {
     if (event.key === 'Enter') {
         fetchWeather();
