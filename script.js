@@ -42,7 +42,7 @@ async function fetchWeather() {
         showMessage("Buscando ciudad...");
 
         // 1. Obtener coordenadas mediante la API alternativa y estable de Nominatim (OpenStreetMap)
-        const geoUrl = `https://openstreetmap.org{encodeURIComponent(city)}&format=json&limit=1`;
+        const geoUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city)}&format=json&limit=1`;
         const geoResponse = await fetch(geoUrl, {
             headers: {
                 'Accept': 'application/json',
