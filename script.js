@@ -10,7 +10,7 @@ const weatherDesc = document.getElementById('weather-desc');
 const windspeed = document.getElementById('windspeed');
 const humidity = document.getElementById('humidity');
 
-// --- DICCIONARIO PARA TRADUCIR CÓDIGOS DE CLIMA ---
+// --- DICCIONARIO PARA TRADUCIR CÓDIGOS DE CLIMA DE OPEN-METEO ---
 const weatherCodes = {
     0: "Cielo despejado",
     1: "Principalmente despejado", 2: "Parcialmente nublado", 3: "Nublado",
@@ -41,50 +41,55 @@ async function fetchWeather() {
     try {
         showMessage("Buscando ciudad...");
 
-        // 1. Obtener coordenadas mediante la API de Geocodificación (Formato simplificado y directo)
-        const geoUrl = `https://open-meteo.com{encodeURIComponent(city)}&count=1&language=es&format=json`;
-        const geoResponse = await fetch(geoUrl);
+        // 1. Obtener coordenadas mediante la API alternativa y estable de Nominatim (OpenStreetMap)
+        const geoUrl = `https://openstreetmap.org{encodeURIComponent(city)}&format=json&limit=1`;
+        const geoResponse = await fetch(geoUrl, {
+            headers: {
+                'Accept': 'application/json',
+                'User-Agent': 'WeatherAppTest/1.0' // Buenas prácticas de identificación requeridas por OpenStreetMap
+            }
+        });
         
-        if (!geoResponse.ok) {
-            throw new Error(`Error en el servidor de geolocalización (Código: ${geoResponse.status})`);
-        }
+        if (!geoResponse.ok) throw new Error("Fallo en el servidor de mapas.");
         
         const geoData = await geoResponse.json();
 
-        if (!geoData.results || geoData.results.length === 0) {
-            showMessage("No se encontró la ciudad. Intenta escribiéndola en inglés o revisa la ortografía.");
+        if (!geoData || geoData.length === 0) {
+            showMessage("No se encontró la ciudad. Intenta con otra o revisa la ortografía.");
             return;
         }
 
-        const { latitude, longitude, name, country } = geoData.results[0];
+        // Extraer latitud, longitud y nombre formateado
+        const latitude = geoData[0].lat;
+        const longitude = geoData[0].lon;
+        const displayName = geoData[0].display_name.split(',')[0]; // Toma solo el nombre de la ciudad
+        const countryName = geoData[0].display_name.split(',').pop().trim(); // Toma el nombre del país
 
-        // 2. Obtener datos del clima usando las coordenadas obtenidas
+        // 2. Obtener datos del clima usando las coordenadas mediante Open-Meteo
         const weatherUrl = `https://open-meteo.com{latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m`;
         const weatherResponse = await fetch(weatherUrl);
         
-        if (!weatherResponse.ok) {
-            throw new Error(`Error al obtener el clima (Código: ${weatherResponse.status})`);
-        }
+        if (!weatherResponse.ok) throw new Error("Fallo al obtener datos meteorológicos.");
         
         const weatherData = await weatherResponse.json();
 
-        // 3. Renderizar los datos en el DOM
+        // 3. Renderizar los datos obtenidos en el DOM
         const current = weatherData.current;
-        cityName.textContent = `${name}, ${country}`;
+        cityName.textContent = `${displayName}, ${countryName}`;
         temperature.textContent = Math.round(current.temperature_2m);
         windspeed.textContent = current.wind_speed_10m;
         humidity.textContent = current.relative_humidity_2m;
         
+        // Traducir código climático
         weatherDesc.textContent = weatherCodes[current.weather_code] || "Condiciones desconocidas";
 
-        // Mostrar tarjeta de resultados
+        // Intercambiar visibilidad de las tarjetas
         messageBox.classList.add('hidden');
         weatherCard.classList.remove('hidden');
 
     } catch (error) {
-        console.error("Error detectado en la ejecución:", error);
-        // Mostramos el mensaje exacto del error técnico para identificar extensiones bloqueadoras
-        showMessage(`Error de red: ${error.message}. Verifica si tienes un bloqueador de anuncios (AdBlock) activo.`);
+        console.error("Detalle del error técnico:", error);
+        showMessage("Ocurrió un error al conectar con el servidor. Inténtalo de nuevo.");
     }
 }
 
