@@ -10,7 +10,7 @@ const weatherDesc = document.getElementById('weather-desc');
 const windspeed = document.getElementById('windspeed');
 const humidity = document.getElementById('humidity');
 
-// --- DICCIONARIO PARA TRADUCIR CÓDIGOS DE CLIMA DE OPEN-METEO ---
+// --- DICCIONARIO PARA TRADUCIR CÓDIGOS DE CLIMA ---
 const weatherCodes = {
     0: "Cielo despejado",
     1: "Principalmente despejado", 2: "Parcialmente nublado", 3: "Nublado",
@@ -41,16 +41,18 @@ async function fetchWeather() {
     try {
         showMessage("Buscando ciudad...");
 
-        // 1. Obtener coordenadas mediante la API de Geocodificación (con modo cors explícito)
+        // 1. Obtener coordenadas mediante la API de Geocodificación (Formato simplificado y directo)
         const geoUrl = `https://open-meteo.com{encodeURIComponent(city)}&count=1&language=es&format=json`;
-        const geoResponse = await fetch(geoUrl, { mode: 'cors' });
+        const geoResponse = await fetch(geoUrl);
         
-        if (!geoResponse.ok) throw new Error(`Error en geocodificación: ${geoResponse.status}`);
+        if (!geoResponse.ok) {
+            throw new Error(`Error en el servidor de geolocalización (Código: ${geoResponse.status})`);
+        }
         
         const geoData = await geoResponse.json();
 
         if (!geoData.results || geoData.results.length === 0) {
-            showMessage("No se encontró la ciudad. Intenta con otra.");
+            showMessage("No se encontró la ciudad. Intenta escribiéndola en inglés o revisa la ortografía.");
             return;
         }
 
@@ -58,9 +60,11 @@ async function fetchWeather() {
 
         // 2. Obtener datos del clima usando las coordenadas obtenidas
         const weatherUrl = `https://open-meteo.com{latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m`;
-        const weatherResponse = await fetch(weatherUrl, { mode: 'cors' });
+        const weatherResponse = await fetch(weatherUrl);
         
-        if (!weatherResponse.ok) throw new Error(`Error en clima: ${weatherResponse.status}`);
+        if (!weatherResponse.ok) {
+            throw new Error(`Error al obtener el clima (Código: ${weatherResponse.status})`);
+        }
         
         const weatherData = await weatherResponse.json();
 
@@ -73,13 +77,14 @@ async function fetchWeather() {
         
         weatherDesc.textContent = weatherCodes[current.weather_code] || "Condiciones desconocidas";
 
+        // Mostrar tarjeta de resultados
         messageBox.classList.add('hidden');
         weatherCard.classList.remove('hidden');
 
     } catch (error) {
-        // Esto imprimirá el error real en tu consola (F12) para diagnosticarlo mejor
-        console.error("Detalle del error:", error);
-        showMessage("Ocurrió un error al conectar con el servidor. Inténtalo de nuevo.");
+        console.error("Error detectado en la ejecución:", error);
+        // Mostramos el mensaje exacto del error técnico para identificar extensiones bloqueadoras
+        showMessage(`Error de red: ${error.message}. Verifica si tienes un bloqueador de anuncios (AdBlock) activo.`);
     }
 }
 
