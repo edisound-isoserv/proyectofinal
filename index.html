@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplicación del Clima</title>
+    <!-- Enlace a la hoja de estilos externa -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Contenedor principal de la aplicación -->
+    <div class="weather-container">
+        <h1>Buscar Clima</h1>
+        
+        <!-- Formulario de búsqueda -->
+        <div class="search-box">
+            <input type="text" id="city-input" placeholder="Escribe una ciudad... Ej: Madrid">
+            <button id="search-btn">Buscar</button>
+        </div>
+
+        <!-- Mensajes de error u carga para el usuario -->
+        <div id="message-box" class="message hidden"></div>
+
+        <!-- Tarjeta donde se visualizarán los datos del clima -->
+        <div id="weather-card" class="weather-card hidden">
+            <h2 id="city-name">Ciudad</h2>
+            <div class="weather-info">
+                <p class="temp"><span id="temperature">--</span>°C</p>
+                <p class="desc" id="weather-desc">Estado</p>
+            </div>
+            <div class="weather-details">
+                <p>💨 Viento: <span id="windspeed">--</span> km/h</p>
+                <p>💧 Humedad: <span id="humidity">--</span>%</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enlace al archivo de JavaScript script.js -->
+    <script src="script.js"></script>
+</body>
+</html>

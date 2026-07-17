@@ -1,0 +1,134 @@
+/* --- ESTILOS GENERALES Y RESETEO --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* --- CONTENEDOR PRINCIPAL --- */
+.weather-container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 30px;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 450px;
+    color: white;
+    text-align: center;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+}
+
+/* --- CAJA DE BÚSQUEDA --- */
+.search-box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+#city-input {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    outline: none;
+    font-size: 1rem;
+}
+
+#search-btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    background-color: #ff7675;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+#search-btn:hover {
+    background-color: #e84393;
+}
+
+/* --- MENSAJES Y ERRORES --- */
+.message {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    background: rgba(255, 234, 167, 0.2);
+}
+
+/* --- TARJETA DE RESULTADOS --- */
+.weather-card {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 10px;
+    animation: fadeIn 0.5s ease;
+}
+
+#city-name {
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+}
+
+.weather-info {
+    margin: 15px 0;
+}
+
+.temp {
+    font-size: 3.5rem;
+    font-weight: bold;
+}
+
+.desc {
+    font-size: 1.2rem;
+    text-transform: capitalize;
+    margin-top: 5px;
+}
+
+.weather-details {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    padding-top: 15px;
+    font-size: 0.95rem;
+}
+
+/* --- CLASES DE CONTROL --- */
+.hidden {
+    display: none;
+}
+
+/* --- ANIMACIÓN --- */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- RESPONSIVE (MÓVIL) --- */
+@media (max-width: 400px) {
+    .search-box {
+        flex-direction: column;
+    }
+    #search-btn {
+        width: 100%;
+    }
+}
