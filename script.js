@@ -65,7 +65,7 @@ async function fetchWeather() {
         const countryName = geoData[0].display_name.split(',').pop().trim(); // Toma el nombre del país
 
         // 2. Obtener datos del clima usando las coordenadas mediante Open-Meteo
-     const weatherUrl = `https://api.open-meteo.com.com/v1/forecast?latitude=${longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m`; // URL con la API, la versión y los signos de dólar correctos
+     const weatherUrl = `https://api.open-meteo.com./v1/forecast?latitude=${longitude}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m`; // URL con la API, la versión y los signos de dólar correctos
         const weatherResponse = await fetch(weatherUrl);
         
         if (!weatherResponse.ok) throw new Error("Fallo al obtener datos meteorológicos.");
